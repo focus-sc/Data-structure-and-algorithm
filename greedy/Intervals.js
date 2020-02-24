@@ -1,4 +1,4 @@
-//贪心算法区间(不)重叠类问题
+//贪心算法解决区间类问题
 
 /*
 253题会议室 II
@@ -58,6 +58,63 @@ let eraseOverlapIntervals = function(intervals) {
     }
     return length - res;
 }
+
+/*
+630题课程表 III
+这里有 n 门不同的在线课程，他们按从 1 到 n 编号。每一门课程有一定的持续上课时间（课程时间）t 以及关闭时间第 d 天。
+一门课要持续学习 t 天直到第 d 天时要完成，你将会从第 1 天开始。
+给出 n 个在线课程用 (t, d) 对表示。你的任务是找出最多可以修几门课。
+输入: [[100, 200], [200, 1300], [1000, 1250], [2000, 3200]]
+输出: 3
+输入: [[100, 200], [200, 1300], [200, 1300], [1000, 1250], [2000, 3200]]
+输出: 4
+*/
+let scheduleCourse = function(courses) {
+    courses.sort((pre,cur)=>pre[1]-cur[1] || pre[0]- cur[0]);
+    let start = 0, queue = [];
+    for(let item of courses){
+        if(start+ item[0] <= item[1]){
+            start += item[0];
+            queue.push(item[0]);
+        }else if(queue.length && queue[0] > item[0]){
+            start += item[0] - queue.shift();
+            queue.push(item[0]);
+        }
+        //优先队列保证最多修课
+        if(queue.length >= 2){
+            let index = queue.indexOf(Math.max(...queue));
+            [queue[0], queue[index]] = [queue[index], queue[0]];
+        }
+    }
+    return queue.length;
+};
+
+/*
+757题 设置交集大小至少为2
+一个整数区间 [a, b]  ( a < b ) 代表着从 a 到 b 的所有连续整数，包括 a 和 b。
+给你一组整数区间intervals，请找到一个最小的集合 S，使得 S 里的元素与区间intervals中的每一个整数区间都至少有2个元素相交。
+输出这个最小集合S的大小。
+输入: intervals = [[1, 3], [1, 4], [2, 5], [3, 5]]
+输出: 3
+输入: intervals = [[1, 2], [2, 3], [2, 4], [4, 5]]
+输出: 5
+*/
+let intersectionSizeTwo = function(intervals) {
+    if(!intervals.length) return 0;
+    intervals.sort((pre,cur)=>pre[1]-cur[1] || cur[0]-pre[0]);
+    let count = [], length = intervals.length;
+    count.push(intervals[0][1]-1,intervals[0][1]);
+    for(let i = 0; i < length; i++){
+        let pre = count[count.length-2], cur = count[count.length-1];
+        //整数区间开始值比集合最大的数还要大，则添加新的两个最大数, 只大于最大数则加一个数，否则不加新数，
+        if(intervals[i][0] > cur){
+            count.push(intervals[i][1]-1, intervals[i][1]);
+        }else if(intervals[i][0]<=cur && intervals[i][0] > pre){
+            count.push(intervals[i][1]);
+        }
+    }
+    return count.length;
+};
 
 /*
 1353题 最多可以参加的会议数目
