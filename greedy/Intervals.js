@@ -1,7 +1,7 @@
 //贪心算法解决区间类问题
 
 /*
-253题会议室 II
+253 题会议室 II
 给定一个会议时间安排的数组，每个会议时间都会包括开始和结束的时间 [[s1,e1],[s2,e2],...] (si < ei)，
 为避免会议冲突，同时要考虑充分利用会议室资源，请你计算至少需要多少间会议室，才能满足这些会议安排。
 
@@ -35,7 +35,7 @@ let minMeetingRooms = function(intervals) {
 };
 
 /*
-435题无重叠区间
+435 题无重叠区间
 给定一个区间的集合，找到需要移除区间的最小数量，使剩余区间互不重叠。
 注意:可以认为区间的终点总是大于它的起点。区间 [1,2] 和 [2,3] 的边界相互“接触”，但没有相互重叠。
 
@@ -60,7 +60,7 @@ let eraseOverlapIntervals = function(intervals) {
 }
 
 /*
-630题课程表 III
+630 题课程表 III
 这里有 n 门不同的在线课程，他们按从 1 到 n 编号。每一门课程有一定的持续上课时间（课程时间）t 以及关闭时间第 d 天。
 一门课要持续学习 t 天直到第 d 天时要完成，你将会从第 1 天开始。
 给出 n 个在线课程用 (t, d) 对表示。你的任务是找出最多可以修几门课。
@@ -114,6 +114,56 @@ let intersectionSizeTwo = function(intervals) {
         }
     }
     return count.length;
+};
+
+/*
+759题 员工空闲时间
+给定员工的 schedule 列表，表示每个员工的工作时间。
+每个员工都有一个非重叠的时间段  Intervals 列表，这些时间段已经排好序。
+返回表示 所有 员工的 共同，正数长度的空闲时间 的有限时间段的列表，同样需要排好序。
+输入：schedule = [[[1,2],[5,6]],[[1,3]],[[4,10]]]
+输出：[[3,4]]
+输入：schedule = [[[1,3],[6,7]],[[2,4]],[[2,5],[9,12]]]
+输出：[[5,6],[7,9]]
+*/
+/**
+ * // Definition for an Interval.
+ * function Interval(start, end) {
+ *    this.start = start;
+ *    this.end = end;
+ * };
+ */
+/**
+ * @param {Interval[][]} schedule
+ * @return {Interval[]}
+ */
+let employeeFreeTime = function(schedule) {
+    let time = [], rest = [];
+    //数据预处理，使问题数据可排序
+    for(let i = 0, len = schedule.length; i < len; i++){
+        for(let j = 0; j < schedule[i].length; j++){
+            let {start, end} = schedule[i][j];
+            time.push([start,end]);
+        }
+    }
+    time.sort((pre,cur)=>pre[0]-cur[0]||pre[1]-cur[1]);
+    task = [[time[0][0],time[0][1]]], top = 0;
+    for(let i = 1, len = time.length; i < len; i++){
+        if(time[i][0]<=task[top][1]){
+            task[top][1] = Math.max(task[top][1],time[i][1]);
+        }else{
+            task.push([time[i][0],time[i][1]]);
+            top++;
+        }
+    }
+    //空闲时间为非空闲时间的间歇
+    for(let i = 0, len = task.length; i < len-1; i++){
+        let [start, end] = [task[i][1], task[i+1][0]];
+        let temp = new Interval(start,end);
+        rest.push(temp);
+    }
+
+    return rest;
 };
 
 /*
