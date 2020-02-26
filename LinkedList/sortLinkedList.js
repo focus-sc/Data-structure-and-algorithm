@@ -1,4 +1,8 @@
-//排序链表
+function ListNode(val) {
+    this.val = val;
+    this.next = null;
+}
+//链表插入排序
 var insertionSortList = function(head) {
     if(head == null) return head;
     var pre = new ListNode(0);
@@ -31,4 +35,48 @@ var insertionSortList = function(head) {
         temp = temp2;
     }
     return head;
+};
+
+var sortList = function(head) {
+    //归并排序函数
+    const mergeSort = function(left,right){
+        let pre = new ListNode(0);
+        let cur = pre;
+        while(left && right){
+            if(left.val <= right.val){
+                cur.next = left;
+                left = left.next
+            }else{
+                cur.next = right;
+                right = right.next;
+            }
+            cur = cur.next;
+        }
+        cur.next = left ? left : right;
+        return pre.next;
+    };
+    //二分函数
+    const splitList = function(head){
+        //如果分不了了就返回
+        if(!head || !head.next){
+            return head;
+        }
+        //快慢指针找中点
+        let slow = head, fast = head.next;
+        while(fast && fast.next){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        //右头节点 断掉中点的节点
+        let rListHead = slow.next;
+        slow.next = null;
+        
+        //继续二分
+        let lList = splitList(head);
+        let rList = splitList(rListHead);
+        //归并
+        return mergeSort(lList,rList);
+    };
+    
+    return splitList(head);
 };
