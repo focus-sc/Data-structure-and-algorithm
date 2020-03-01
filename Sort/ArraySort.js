@@ -50,7 +50,7 @@ let mergeSort = function(array){
 				j++;
 			}
 		}
-		return result.concat(i < left.length ? left.slice(i) : right.slice(j));
+		return [...result, ...left.slice(i), ...right.slice(j)];
 	};
 	let split = function(start, end){
 		if(start == end){
